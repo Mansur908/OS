@@ -15,12 +15,13 @@ int main(int argc , char *argv[]) {
         char s;
         int count = 1;
         while ((s=getc(fout)) != EOF) {
+            if ((count == n) && (s == '\n')){
+                count = 1;
+                getc(stdin);
+                continue;
+            }
             if (count <= n){
                 printf("%c", s);
-            }
-            if (count == n){
-                count = 0;
-                getc(stdin);
             }
             if ( s == '\n'){
                 count++;
