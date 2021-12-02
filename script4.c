@@ -15,7 +15,7 @@ int main(int argc , char *argv[]) {
             fputc(s, fin);
         }
 
-        if (fclose(fout) == -1) {
+        if ((fclose(fout) == -1) || (fclose(fin) == -1)) {
                 printf("%s", "File close error\n");
                 return 1;
         }
