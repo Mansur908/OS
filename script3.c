@@ -17,7 +17,9 @@ int main(int argc , char *argv[]) {
         while ((s=getc(fout)) != EOF) {
             if ((count == n) && (s == '\n')){
                 count = 1;
-                getc(stdin);
+                if (getc(stdin)){
+                    printf("\n");
+                }
                 continue;
             }
             if (count <= n){
