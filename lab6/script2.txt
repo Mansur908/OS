@@ -1,0 +1,111 @@
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <stdlib.h>
+#include <sys/timeb.h>
+#include <time.h>
+#include <math.h>
+
+
+int factorial (int n)
+{
+  return (n < 2) ? 1 : n * factorial (n - 1);
+}
+
+float pw (float a, int b){
+    float result = 1;
+    for (int i=0;i<b;i++){
+        result *= a;
+    }
+    return result;
+}
+
+float getCoef(int i, int N){
+    float b = (2 * M_PI)/N;
+    float result;
+    if (i%2 == 0){
+        result = 0;
+        return result;
+    }
+    else{
+        if (i == 1){
+            result = b;
+            return result/factorial(i);
+        }
+        if (i == 3){
+            result = pw(b,3) * -1;
+            return result/factorial(i);
+        }
+        if (i%4 == 1){
+            result = pw(b,i);
+            return result/factorial(i);
+        }
+        if (i%4 == 3){
+            result = pw(b,i) * -1;
+            return result/factorial(i);
+        }
+    }
+}
+
+void write1(float e, char* filename){
+    FILE *fp;
+    //char * filename = "result.txt";
+    if((fp= fopen(filename, "a"))==NULL)
+    {
+        printf("File error1\n");
+    }
+    fprintf(fp, "%f\n", e);
+    fclose(fp);
+}
+
+float readandsum(char* filename){
+    FILE *fp;
+    //char * filename = "result.txt";
+    char str[50];
+    float sum = 0;
+    if((fp= fopen(filename, "r"))==NULL)
+    {
+        printf("File error2\n");
+    }
+    while(!feof(fp)){
+        fgets (str,sizeof(str),fp);
+        sum += atof(str);
+    }
+    sum -= atof(str);
+    if (-1 == remove (filename))
+        printf ("Ошибка\n");
+    return sum;
+}
+
+
+
+void main (int argc, char* argv[]){
+    remove ("result.txt");
+    pid_t pid;
+    char* filename = "out.txt";
+    int N = atoi(argv[2]);
+    int n = atoi(argv[3]);
+    int K = atoi(argv[1]);
+    for (int i=0;i<K;i++){
+        float sum = 0;
+        for (int j=0;j<n;j++){
+            pid = fork();
+            wait(NULL);
+            if (pid == 0){
+                float elem;
+                elem = pw(i,j) * getCoef(j, N);
+                write1(elem, filename);
+                printf("Pid = %d\n", getpid());
+                printf("Element = %f\n", elem);
+                kill(getpid(), SIGKILL);
+            }
+        }
+        printf("-----------\n");
+        float result = readandsum(filename);
+        printf("sum = %f\n", result);
+        write1(result, "result.txt");
+        printf("\n");
+    }
+}
+
