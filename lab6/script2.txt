@@ -50,7 +50,6 @@ float getCoef(int i, int N){
 
 void write1(float e, char* filename){
     FILE *fp;
-    //char * filename = "result.txt";
     if((fp= fopen(filename, "a"))==NULL)
     {
         printf("File error1\n");
@@ -61,7 +60,6 @@ void write1(float e, char* filename){
 
 float readandsum(char* filename){
     FILE *fp;
-    //char * filename = "result.txt";
     char str[50];
     float sum = 0;
     if((fp= fopen(filename, "r"))==NULL)
@@ -77,8 +75,6 @@ float readandsum(char* filename){
         printf ("Ошибка\n");
     return sum;
 }
-
-
 
 void main (int argc, char* argv[]){
     remove ("result.txt");
@@ -108,4 +104,3 @@ void main (int argc, char* argv[]){
         printf("\n");
     }
 }
-
