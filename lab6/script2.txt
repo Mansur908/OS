@@ -77,6 +77,10 @@ float readandsum(char* filename){
 }
 
 void main (int argc, char* argv[]){
+    if (argc != 4){
+        printf("Arguments error\n");
+        exit(1);
+    }
     remove ("result.txt");
     pid_t pid;
     char* filename = "out.txt";
