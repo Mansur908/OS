@@ -6,45 +6,54 @@
 #include <sys/timeb.h>
 #include <time.h>
 #include <math.h>
+#include <limits.h>
 
-
-int factorial (int n)
+long factorial (int n)
 {
-  return (n < 2) ? 1 : n * factorial (n - 1);
+  if (n > 20){
+      return LONG_MAX;
+  }
+  long r;
+  for (r = 1; n > 1; r *= (n--));
+  return r;
 }
 
-float pw (float a, int b){
-    float result = 1;
-    for (int i=0;i<b;i++){
-        result *= a;
-    }
-    return result;
-}
-
-float getCoef(int i, int N){
-    float b = (2 * M_PI)/N;
-    float result;
-    if (i%2 == 0){
-        result = 0;
+float getelem(int j, int i, int N){
+    float fun = 2*M_PI*i/N;
+    if (j == 1){
+        float ost = fmod(fun,(2*M_PI));
+        float result;
+        if (ost > M_PI){
+            result = -1 * (ost - M_PI);
+        }
+        else{
+            result = ost;
+        }
         return result;
     }
-    else{
-        if (i == 1){
-            result = b;
-            return result/factorial(i);
+    if (j % 4 == 3){
+        float ost = fmod(fun,(2*M_PI));
+        float result;
+        if (ost > M_PI){
+            result = -1 * (ost - M_PI);
         }
-        if (i == 3){
-            result = pw(b,3) * -1;
-            return result/factorial(i);
+        else{
+            result = ost;
         }
-        if (i%4 == 1){
-            result = pw(b,i);
-            return result/factorial(i);
+        result = -1 * pow(result,j)/factorial(j);
+        return result ;
+    }
+    if (j % 4 == 1){
+        float ost = fmod(fun,(2*M_PI));
+        float result;
+        if (ost > M_PI){
+            result = -1 * (ost - M_PI);
         }
-        if (i%4 == 3){
-            result = pw(b,i) * -1;
-            return result/factorial(i);
+        else{
+            result = ost;
         }
+        result = pow(result,j)/factorial(j);
+        return result;
     }
 }
 
@@ -87,18 +96,24 @@ void main (int argc, char* argv[]){
     int N = atoi(argv[2]);
     int n = atoi(argv[3]);
     int K = atoi(argv[1]);
+    if (n > 20){
+        printf("n слишком большое \n");
+        exit(1);
+    }
     for (int i=0;i<K;i++){
         float sum = 0;
-        for (int j=0;j<n;j++){
-            pid = fork();
-            wait(NULL);
-            if (pid == 0){
-                float elem;
-                elem = pw(i,j) * getCoef(j, N);
-                write1(elem, filename);
-                printf("Pid = %d\n", getpid());
-                printf("Element = %f\n", elem);
-                kill(getpid(), SIGKILL);
+        for (int j=0;j<n*2;j++){
+            if ((j % 2) != 0){
+                pid = fork();
+                wait(NULL);
+                if (pid == 0){
+                    float elem;
+                    elem = getelem(j,i,N);
+                    write1(elem, filename);
+                    printf("Pid = %d\n", getpid());
+                    printf("Element = %f\n", elem);
+                    kill(getpid(), SIGKILL);
+                }
             }
         }
         printf("-----------\n");
